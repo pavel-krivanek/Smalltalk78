@@ -92,7 +92,7 @@ Ctrl-d  done with eval
 
 <script>
 module("St78-Test").requires("Smalltalk78").toRun(function() {
-    Smalltalk78.run("images/updated.st78", canvas);
+    Smalltalk78.runBase("images/objectTable.bin","images/objectSpace.bin", "images/delta.bin", canvas);
 });
 
 helpbutton.onclick = function() {

@@ -380,6 +380,83 @@ function runImage(buffer, imageName, canvas) {
     interpretLoop();
 }
 
+function runImage(buffer, imageName, canvas) {
+    var display = createDisplay(canvas),
+        image = users.bert.St78.vm.Image.readFromBuffer(buffer, imageName);
+    Smalltalk78.vm = new users.bert.St78.vm.Interpreter(image, display);
+    window.onbeforeunload = function() {
+        return "Smalltalk78 is still running";
+    };
+    interpretLoop();
+}
+
+function runOriginalImage(tableBuffer, spaceBuffer, canvas) {
+   var display = createDisplay(canvas),
+    //    image = users.bert.St78.vm.Image.readFromBuffer(buffer, imageName);
+       reader = new users.bert.St78.vm.ObjectTableReader(
+            new Uint8Array(tableBuffer),
+            new Uint8Array(spaceBuffer),
+            49152);
+       image = new users.bert.St78.vm.Image(reader.readObjects(), 'original image', true);
+	
+    Smalltalk78.vm = new users.bert.St78.vm.Interpreter(image, display);
+    window.onbeforeunload = function() {
+        return "Smalltalk78 is still running";
+    };
+    interpretLoop();
+}
+
+function runBaseImage(tableBuffer, spaceBuffer, deltaBuffer, canvas) {
+   var display = createDisplay(canvas),
+    //    image = users.bert.St78.vm.Image.readFromBuffer(buffer, imageName);
+       reader = new users.bert.St78.vm.ObjectTableReader(
+            new Uint8Array(tableBuffer),
+            new Uint8Array(spaceBuffer),
+            49152);
+       original = new users.bert.St78.vm.Image(reader.readObjects(), 'original image', true)
+       delta = deltaBuffer,
+       baseImage = users.bert.St78.vm.Image.withDeltaFromBuffer(original, deltaBuffer, 'base image');
+
+	
+    Smalltalk78.vm = new users.bert.St78.vm.Interpreter(baseImage, display);
+    window.onbeforeunload = function() {
+        return "Smalltalk78 is still running";
+    };
+    interpretLoop();
+}
+
+Smalltalk78.getFile = function(fileUrl, thenDo) {
+    var rq = new XMLHttpRequest();
+    rq.open("get", fileUrl, true);
+    rq.responseType = "arraybuffer";
+    rq.onload = function(e) {
+        if (rq.status == 200) {
+            thenDo(rq.response);
+        }
+        else rq.onerror(rq.statusText);
+    };
+    rq.onerror = function(e) {
+        alert("Failed to download:\n" + fileUrl);
+    }
+    rq.send();
+}
+
+
+Smalltalk78.runOriginal = function(tableUrl, spaceUrl, canvas) {
+  var self = this;
+  self.getFile( tableUrl, function(tableBuffer) {
+    self.getFile( spaceUrl, function(speceBuffer) {
+      runOriginalImage(tableBuffer, speceBuffer, canvas); })})
+}
+
+Smalltalk78.runBase = function(tableUrl, spaceUrl, deltaUrl, canvas) {
+  var self = this;
+  self.getFile( tableUrl, function(tableBuffer) {
+    self.getFile( spaceUrl, function(speceBuffer) {
+      self.getFile( deltaUrl, function(deltaBuffer) {
+        runBaseImage(tableBuffer, speceBuffer, deltaBuffer, canvas); })})})
+}
+
 Smalltalk78.run = function(imageUrl, canvas) {
     var rq = new XMLHttpRequest();
     rq.open("get", imageUrl, true);
