@@ -12,3 +12,14 @@ You may also try Alan Borning's [Thinglab][thinglab] which runs on this VM.
 [standalone]: https://bertfreudenberg.github.io/Smalltalk78/
 [thinglab]: http://www.cdglabs.org/thinglab/
 [paper]: http://freudenbergs.de/bert/publications/Ingalls-2014-Smalltalk78.pdf
+
+How to run
+==========
+
+Clone this repository and run serve the files with a web server, e.g.:
+```
+python -m SimpleHTTPServer 9090
+```
+- http://localhost:9090
+- http://localhost:9090/original.html
+- http://localhost:9090/base.html
